@@ -3,3 +3,7 @@ export const API_CONFIG = {
   PRESENTACION_ENDPOINT: process.env.PRESENTACION_ENDPOINT || 'https://minedaiagente-127465468754.europe-west1.run.app/presentacion',
   ENLACES_ENDPOINT: process.env.ENLACES_ENDPOINT || 'https://minedaiagente-127465468754.europe-west1.run.app/enlaces',
 };
+
+console.log("GUION_ENDPOINT from env:", process.env.GUION_ENDPOINT);
+console.log("PRESENTACION_ENDPOINT from env:", process.env.PRESENTACION_ENDPOINT);
+console.log("ENLACES_ENDPOINT from env:", process.env.ENLACES_ENDPOINT);
