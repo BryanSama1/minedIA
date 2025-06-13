@@ -6,9 +6,9 @@ interface GeneratorProps {
   onNavigate: (page: 'landing' | 'dashboard' | 'generate' | 'student-dashboard' | 'student-guide') => void;
 }
 
-const GUION_ENDPOINT = '/api/minedaiagente/guion';
-const PRESENTACION_ENDPOINT = '/api/minedaiagente/presentacion';
-const ENLACES_ENDPOINT = '/api/enlaces';
+const GUION_ENDPOINT = 'https://minedaiagente-127465468754.europe-west1.run.app/guion';
+const PRESENTACION_ENDPOINT = 'https://minedaiagente-127465468754.europe-west1.run.app/presentacion';
+const ENLACES_ENDPOINT = 'https://minedaiagente-127465468754.europe-west1.run.app/enlaces';
 
 const formatPrompt = (
   tema: string,
@@ -101,28 +101,9 @@ const Generator: React.FC<GeneratorProps> = ({ onNavigate }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ input: `Tema: ${tema}` }),
+          body: JSON.stringify({ prompt }),
         })
       ]);
-
-      if (!guionResponse.ok || !presentacionResponse.ok || !enlacesResponse.ok) {
-        console.error('Guion Response Status:', guionResponse.status);
-        console.error('Presentacion Response Status:', presentacionResponse.status);
-        console.error('Enlaces Response Status:', enlacesResponse.status);
-        
-        try {
-          const guionErrorData = await guionResponse.text();
-          const presentacionErrorData = await presentacionResponse.text();
-          const enlacesErrorData = await enlacesResponse.text();
-          console.error('Guion Response Error:', guionErrorData);
-          console.error('Presentacion Response Error:', presentacionErrorData);
-          console.error('Enlaces Response Error:', enlacesErrorData);
-        } catch (parseError) {
-          console.error('Error parsing error responses:', parseError);
-        }
-        
-        throw new Error(`Error en la respuesta del servidor: Guion (${guionResponse.status}), Presentación (${presentacionResponse.status}), Enlaces (${enlacesResponse.status})`);
-      }
 
       const [guionData, presentacionData, enlacesData] = await Promise.all([
         guionResponse.json(),
@@ -130,14 +111,22 @@ const Generator: React.FC<GeneratorProps> = ({ onNavigate }) => {
         enlacesResponse.json()
       ]);
 
-      if (!guionData.response || !presentacionData.response || !enlacesData.response) {
+      console.log('Guion Data:', guionData);
+      console.log('Presentacion Data:', presentacionData);
+      console.log('Enlaces Data:', enlacesData);
+
+      if (!guionData || !presentacionData || !enlacesData) {
         throw new Error('Respuesta del servidor incompleta o inválida');
       }
       
       setGeneratedContent({
         guion: guionData.response,
         presentacion: presentacionData.response,
-        ejercicios: `RECURSOS EDUCATIVOS COMPLEMENTARIOS\n\nEnlaces recomendados para profundizar en el tema:\n\n${enlacesData.response}`,
+        ejercicios: `RECURSOS EDUCATIVOS COMPLEMENTARIOS
+
+Enlaces recomendados para profundizar en el tema:
+
+${enlacesData.response}`,
       });
     } catch (error) {
       console.error('Error completo al generar contenido:', error);
